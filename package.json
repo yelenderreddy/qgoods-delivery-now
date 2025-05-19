@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@hookform/resolvers": "^5.0.1",
+    "drizzle-kit": "^0.31.1",
+    "drizzle-orm": "^0.43.1",
+    "lucide-react": "^0.511.0",
+    "pg": "^8.16.0",
+    "react-hook-form": "^7.56.4",
+    "react-router-dom": "^7.6.0",
+    "yup": "^1.6.1"
+  }
+}
