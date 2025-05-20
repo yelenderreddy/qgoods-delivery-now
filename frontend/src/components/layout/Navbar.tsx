@@ -116,7 +116,7 @@ const Navbar = () => {
               className="block px-4 py-2 text-gray-800 hover:bg-gray-50 rounded-md"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Stores Near Me
+          
             </Link>
             <Link 
               to="/login" 

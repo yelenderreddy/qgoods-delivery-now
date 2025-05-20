@@ -67,5 +67,54 @@ export class UserService {
 }
   }
 
+
+  async loginUser(email: string, password: string): Promise<{
+    statusCode: string;
+    message: string;
+    data?: any;
+  }> {
+    try {
+      // Find user by email
+      const users = await db
+        .select()
+        .from(userDetails)
+        .where(eq(userDetails.userEmail, email));
+  
+      if (users.length === 0) {
+        return {
+          statusCode: '404',
+          message: 'User not found',
+        };
+      }
+  
+      const user = users[0];
+  
+      // Decrypt stored password
+      const decryptedPassword = this.decryptPassword(user.userPassword);
+  
+      // Compare passwords
+      if (decryptedPassword !== password) {
+        return {
+          statusCode: '401',
+          message: 'Invalid credentials',
+        };
+      }
+  
+      // Success - return user data (omit password)
+      const { userPassword, ...userWithoutPassword } = user;
+  
+      return {
+        statusCode: '200',
+        message: 'Login successful',
+        data: userWithoutPassword,
+      };
+    } catch (error) {
+      console.error('Failed to login user:', error);
+      throw new InternalServerErrorException('Failed to login user');
+    }
+  }
+
+
+
  
 }

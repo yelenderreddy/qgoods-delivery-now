@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { categories } from "@/data/dummyData";
@@ -6,24 +5,51 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 
-// Get grocery subcategories (wheat, oil, masala, dals, dry-fruits, noodles)
-const groceryCategories = categories.filter(cat => 
-  ["10", "11", "12", "13", "14", "15"].includes(cat.id)
-);
-
-// Get main categories excluding the grocery subcategories
-const mainCategories = categories.filter(cat => 
-  !["10", "11", "12", "13", "14", "15"].includes(cat.id)
-);
-
-// Add a new "Grocery" virtual category
-const groceryCategory = {
-  id: "grocery",
-  name: "Grocery",
-  icon: "🛒",
-  slug: "grocery",
-  image: "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=500"
-};
+// Define main categories with their respective slugs and images
+const mainCategories = [
+  {
+    id: "1",
+    name: "Fruits & Vegetables",
+    icon: "🥗",
+    slug: "fruits",
+    image: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=500"
+  },
+  {
+    id: "2",
+    name: "Dairy & Bakery",
+    icon: "🥛",
+    slug: "dairy",
+    image: "https://images.unsplash.com/photo-1607083206968-13611e3d76db?q=80&w=500"
+  },
+  {
+    id: "3",
+    name: "Meat & Fish",
+    icon: "🥩",
+    slug: "meat",
+    image: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?q=80&w=500"
+  },
+  {
+    id: "4",
+    name: "Beverages",
+    icon: "🥤",
+    slug: "beverages",
+    image: "https://images.unsplash.com/photo-1544145945-f90425340c7e?q=80&w=500"
+  },
+  {
+    id: "5",
+    name: "Snacks & Munchies",
+    icon: "🍿",
+    slug: "snacks",
+    image: "https://images.unsplash.com/photo-1582169296194-d4d644c459d0?q=80&w=500"
+  },
+  {
+    id: "6",
+    name: "Grocery & Staples",
+    icon: "🛒",
+    slug: "grocery",
+    image: "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=500"
+  }
+];
 
 const CategorySection = () => {
   return (
@@ -61,27 +87,6 @@ const CategorySection = () => {
                 </div>
               </Link>
             ))}
-            
-            {/* Add Grocery as a separate category */}
-            <Link 
-              key={groceryCategory.id} 
-              to={`/categories/${groceryCategory.slug}`}
-              className="inline-block min-w-[140px] hover-scale"
-            >
-              <div className="flex flex-col items-center justify-center">
-                <div className="relative w-28 h-28 md:w-32 md:h-32 mb-3">
-                  <img
-                    src={groceryCategory.image}
-                    alt={groceryCategory.name}
-                    className="w-full h-full object-cover rounded-xl"
-                  />
-                  <div className="absolute inset-0 bg-black bg-opacity-10 rounded-xl"></div>
-                </div>
-                <span className="text-gray-800 font-medium text-sm">
-                  {groceryCategory.name}
-                </span>
-              </div>
-            </Link>
           </div>
         </ScrollArea>
       </div>

@@ -12,12 +12,12 @@ import { Loader2 } from "lucide-react";
 
 // Validation schema
 const schema = yup.object({
-  fullName: yup.string().required("Full name is required"),
+  name: yup.string().required("Name is required"),
   email: yup.string().email("Invalid email format").required("Email is required"),
-  phone: yup
+  mobileNumber: yup
     .string()
-    .matches(/^[0-9]{10}$/, "Phone number must be 10 digits")
-    .required("Phone number is required"),
+    .matches(/^[0-9]{10}$/, "Mobile number must be 10 digits")
+    .required("Mobile number is required"),
   password: yup
     .string()
     .min(8, "Password must be at least 8 characters")
@@ -53,9 +53,23 @@ const Register = () => {
   const onSubmit = async (data: FormData) => {
     try {
       setIsLoading(true);
-      // TODO: Implement API call to register user
-      // const response = await registerUser(data);
-      
+      const response = await fetch("http://localhost:3000/api/users/createUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: data.name,
+          email: data.email,
+          mobileNumber: parseInt(data.mobileNumber),
+          password: data.password,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Registration failed");
+      }
+
       toast({
         title: "Registration successful!",
         description: "Please check your email to verify your account.",
@@ -91,15 +105,15 @@ const Register = () => {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-4">
             <div>
-              <Label htmlFor="fullName">Full Name</Label>
+              <Label htmlFor="name">Name</Label>
               <Input
-                id="fullName"
+                id="name"
                 type="text"
-                {...register("fullName")}
+                {...register("name")}
                 className="mt-1"
               />
-              {errors.fullName && (
-                <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>
+              {errors.name && (
+                <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
               )}
             </div>
 
@@ -117,15 +131,15 @@ const Register = () => {
             </div>
 
             <div>
-              <Label htmlFor="phone">Phone Number</Label>
+              <Label htmlFor="mobileNumber">Mobile Number</Label>
               <Input
-                id="phone"
+                id="mobileNumber"
                 type="tel"
-                {...register("phone")}
+                {...register("mobileNumber")}
                 className="mt-1"
               />
-              {errors.phone && (
-                <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>
+              {errors.mobileNumber && (
+                <p className="text-red-500 text-sm mt-1">{errors.mobileNumber.message}</p>
               )}
             </div>
 

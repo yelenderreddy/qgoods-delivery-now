@@ -1,14 +1,47 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useCart } from "@/lib/cartContext";
 import CartSidebar from "@/components/cart/CartSidebar";
+import { toast } from "@/components/ui/use-toast";
+
+const coupons = [
+  { code: "WELCOME20", discount: 20, description: "Get 20% off on your first order" },
+  { code: "SUMMER15", discount: 15, description: "Summer special 15% off" },
+  { code: "FRESH10", discount: 10, description: "10% off on fresh produce" },
+  { code: "BULK25", discount: 25, description: "25% off on bulk orders" },
+];
 
 const Checkout = () => {
   const { items, totalPrice } = useCart();
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<typeof coupons[0] | null>(null);
+
+  const handleApplyCoupon = () => {
+    const coupon = coupons.find(c => c.code === couponCode.toUpperCase());
+    if (coupon) {
+      setAppliedCoupon(coupon);
+      toast({
+        title: "Coupon applied!",
+        description: `You got ${coupon.discount}% off your order`,
+      });
+    } else {
+      toast({
+        title: "Invalid coupon",
+        description: "Please check the coupon code and try again",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const calculateDiscount = () => {
+    if (!appliedCoupon) return 0;
+    return (totalPrice * appliedCoupon.discount) / 100;
+  };
+
+  const finalPrice = totalPrice - calculateDiscount();
 
   return (
     <>
@@ -42,12 +75,42 @@ const Checkout = () => {
               </div>
               
               <div className="border-t my-4"></div>
+
+              {/* Coupon Section */}
+              <div className="mb-4">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Enter coupon code"
+                    className="flex-1 p-2 border rounded-md"
+                    value={couponCode}
+                    onChange={(e) => setCouponCode(e.target.value)}
+                  />
+                  <Button 
+                    onClick={handleApplyCoupon}
+                    className="bg-qgreen-500 hover:bg-qgreen-600"
+                  >
+                    Apply
+                  </Button>
+                </div>
+                {appliedCoupon && (
+                  <div className="mt-2 text-sm text-qgreen-600">
+                    Applied: {appliedCoupon.code} ({appliedCoupon.discount}% off)
+                  </div>
+                )}
+              </div>
               
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Subtotal</span>
                   <span className="font-medium">${totalPrice.toFixed(2)}</span>
                 </div>
+                {appliedCoupon && (
+                  <div className="flex justify-between text-qgreen-600">
+                    <span>Discount ({appliedCoupon.discount}%)</span>
+                    <span>-${calculateDiscount().toFixed(2)}</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-gray-600">Delivery Fee</span>
                   <span className="font-medium">$0.00</span>
@@ -58,7 +121,7 @@ const Checkout = () => {
               
               <div className="flex justify-between py-2 font-semibold text-lg">
                 <span>Total</span>
-                <span>${totalPrice.toFixed(2)}</span>
+                <span>${finalPrice.toFixed(2)}</span>
               </div>
             </div>
           </div>

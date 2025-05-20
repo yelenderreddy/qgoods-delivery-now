@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   HttpException,
   HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 
@@ -38,5 +39,16 @@ export class UserController {
     );
   }
 
- 
+  
+  @Post('login')
+  @HttpCode(HttpStatus.OK) // Always return 200 for valid responses, including errors in body
+  async loginUser(
+    @Body() body: { email: string; password: string },
+  ) {
+    const { email, password } = body;
+
+    const result = await this.userService.loginUser(email, password);
+
+    return result;
+}
 }

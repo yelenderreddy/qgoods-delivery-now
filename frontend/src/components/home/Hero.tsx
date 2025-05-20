@@ -1,13 +1,28 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { MapPin, Navigation } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 
+const coupons = [
+  { code: "WELCOME20", discount: 20, description: "Get 20% off on your first order" },
+  { code: "SUMMER15", discount: 15, description: "Summer special 15% off" },
+  { code: "FRESH10", discount: 10, description: "10% off on fresh produce" },
+  { code: "BULK25", discount: 25, description: "25% off on bulk orders" },
+];
+
 const Hero = () => {
   const [address, setAddress] = useState("");
   const [isLocating, setIsLocating] = useState(false);
+  const [currentCouponIndex, setCurrentCouponIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentCouponIndex((prev) => (prev + 1) % coupons.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleGetLocation = () => {
     setIsLocating(true);
@@ -115,6 +130,31 @@ const Hero = () => {
                   <path d="M5 13l4 4L19 7"></path>
                 </svg>
                 <span className="text-sm text-gray-600">Special Discounts</span>
+              </div>
+            </div>
+
+            {/* Coupon Slider */}
+            <div className="overflow-hidden rounded-lg mb-8">
+              <div 
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentCouponIndex * 100}%)` }}
+              >
+                {coupons.map((coupon, index) => (
+                  <div 
+                    key={coupon.code}
+                    className="w-full flex-shrink-0 bg-qgreen-500 text-white p-4 shadow-md"
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h3 className="text-xl font-bold">{coupon.code}</h3>
+                        <p className="text-sm opacity-90">{coupon.description}</p>
+                      </div>
+                      <div className="text-2xl font-bold">
+                        {coupon.discount}% OFF
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

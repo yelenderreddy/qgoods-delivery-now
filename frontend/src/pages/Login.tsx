@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,40 +7,67 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CartSidebar from "@/components/cart/CartSidebar";
 import { toast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
 
 const Login = () => {
-  const [email, setEmail] = useState("user@qgoods.com");
-  const [password, setPassword] = useState("UserPass123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Check if user is already logged in
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/');
+    }
+  }, [navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simple demo authentication
-    setTimeout(() => {
-      if (email === "admin@qgoods.com" && password === "AdminPass123") {
-        toast({
-          title: "Admin login successful",
-          description: "Welcome to the admin dashboard",
-        });
-        navigate("/admin");
-      } else if (email === "user@qgoods.com" && password === "UserPass123") {
-        toast({
-          title: "Login successful",
-          description: "Welcome back to QGoods",
-        });
-        navigate("/");
-      } else {
-        toast({
-          title: "Login failed",
-          description: "Invalid email or password",
-          variant: "destructive",
-        });
+    try {
+      const response = await fetch("http://[::1]:3000/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
       }
+
+      // Set login flag
+      localStorage.setItem("isLoggedIn", "true");
+      // Store user data if available
+      if (data.user) {
+        localStorage.setItem("user", JSON.stringify(data.user));
+      }
+
+      toast({
+        title: "Login successful",
+        description: "Welcome back to QGoods",
+      });
+      
+      // Redirect to index page
+      navigate("/", { replace: true });
+    } catch (error) {
+      toast({
+        title: "Login failed",
+        description: error instanceof Error ? error.message : "Invalid email or password",
+        variant: "destructive",
+      });
+    } finally {
       setLoading(false);
-    }, 800);
+    }
   };
 
   return (
@@ -92,7 +118,14 @@ const Login = () => {
                 className="w-full bg-qgreen-500 hover:bg-qgreen-600"
                 disabled={loading}
               >
-                {loading ? "Signing in..." : "Sign in"}
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign in"
+                )}
               </Button>
             </form>
             
